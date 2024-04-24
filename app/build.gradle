@@ -1,0 +1,66 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.dfg.fmodvoicechange'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.dfg.fmodvoicechange"
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild{
+            // 决定了CMakeLists.txt走向
+            cmake{
+                //cppFlags "" //如果这样写默认编译出四大平台，例如 armeabi-v7a和areabi
+                // 这行代码还不能决定apk的生成armeabi-v7a，这是去处理
+                // 这行代码的意义在于 告诉 CMakeLists.txt里的 CMAKE_ANDROID_ARCH_ABI == armeabi-v7a，决定了CMakeLists.txt走向。
+                abiFilters "armeabi-v7a"// 指定CPU架构是armeabi-v7a 【注意：这里只指定本地库到armeabi-v7a】
+            }
+            // 决定apk生成的走向
+            // 指定CPU的架构 apk/lib/平台
+            // 下面代码不写，默认是四大CPU架构平台
+            ndk{
+                abiFilters("armeabi-v7a")// 指定CPU架构是armeabi-v7a 【注意：这里只指定编译所有库到armeabi-v7a进apk】
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation files('libs\\fmod.jar')
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
